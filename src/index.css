@@ -1,0 +1,38 @@
+/* src/index.css */
+
+/* Estas son las directivas base de Tailwind. No se tocan. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Aquí definimos nuestras propias clases de componentes reutilizables.
+  Usamos la directiva '@layer components' para que Tailwind las optimice.
+  La sintaxis '@apply' nos permite construir nuestras clases usando
+  las clases de utilidad de Tailwind, manteniendo todo consistente.
+*/
+@layer components {
+  .form-input {
+    @apply bg-checomvas-input border border-transparent rounded-lg p-4 text-checomvas-foreground w-full transition-all duration-300;
+  }
+  .form-input::placeholder {
+    @apply text-checomvas-placeholder;
+  }
+  .form-input:focus {
+    @apply outline-none border-checomvas-primary ring-2 ring-checomvas-primary/30;
+  }
+
+  .btn {
+    @apply transition-all duration-300 ease-in-out;
+  }
+  .btn:hover {
+    @apply -translate-y-0.5 shadow-lg;
+  }
+
+  .tab {
+    @apply transition-all duration-300 ease-in-out flex-1 py-3 text-center font-semibold text-gray-400 border-b-2 border-transparent;
+  }
+  .tab.active {
+    @apply text-checomvas-primary border-checomvas-primary;
+  }
+}

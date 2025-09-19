@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: checomvas.netlify.app/sitemap.xml
