@@ -73,9 +73,9 @@
     "Decorator": "Decorador",
     "Planner": "Proyectista",
     "Industrial Designer": "Diseñador industrial",
-    "Manufacturer": "Fabricante",
-    "Distributor": "Distribuidor / Importador",
-    "Builder": "Constructor / Contratista"
+    "Manufacturer": "Diseñador fabricante",
+    "Distributor": "Diseñador Distribuidor / Importador",
+    "Builder": "Diseñador Constructor / Contratista"
   },
   "design_form_add_title": "Añadir Nuevo Diseño",
   "design_form_edit_title": "Editar Diseño",
@@ -136,7 +136,7 @@
   "guide_tip_content": "Si quieres mostrar tu identidad como diseñador, ¡utiliza tu perfil! Ahí podrás añadir tu logo. Las empresas que deseen mostrar su marca pueden optar por un plan premium.",
 
   "landing_hero_title": "CHECOMVAS",
-  "landing_hero_subtitle": "Conecta con los mejores diseñadores y fabricantes de iluminación del mundo. Descubre diseños innovadores y da vida a tus proyectos.",
+  "landing_hero_subtitle": "Conecta con los mejores diseñadores de iluminación del mundo. Descubre sus diseños más innovadores y da vida a tus proyectos.",
   "landing_recent_title": "Recién Incorporado",
   "landing_howitworks_title": "El Punto de Encuentro para la Iluminación",
   "landing_howitworks_subtitle": "Checomvas simplifica la conexión entre el talento creativo y la industria.",
@@ -195,6 +195,69 @@
   "profile_form_pdf_select_button": "Seleccionar PDF",
   "profile_form_pdf_attached": "Archivo adjunto",
   "profile_error_pdf_format": "Formato no válido. Solo se permiten archivos PDF.",
-  "profile_error_pdf_size": "El PDF es muy pesado. El máximo es 5 MB."
+  "profile_error_pdf_size": "El PDF es muy pesado. El máximo es 5 MB.",
 
+  "login_password_reset_prompt": "Por favor, introduce tu dirección de email para restablecer la contraseña:",
+  "login_password_reset_success": "¡Correo de recuperación enviado! Revisa tu bandeja de entrada.",
+  "login_password_reset_error": "No se pudo enviar el correo. Verifica que el email sea correcto.",
+
+  "categories": {
+    "Downlight": "Empotrados",
+    "Surface": "Superficie",
+    "Pendant": "Colgantes",
+    "Track": "Sistemas de Carril",
+    "Linear": "Lineales",
+    "Outdoor": "Exterior",
+    "Decorative": "Decorativos",
+    "Architectural": "Arquitectónica",
+    "Industrial": "Industrial",
+    "Commercial": "Comercial",
+    "Emergency": "Emergencia y Seguridad",
+    "Smart": "Iluminación Inteligente"
+  },
+  "styles": {
+    "Modern": "Moderno",
+    "Minimalist": "Minimalista",
+    "Classic": "Clásico",
+    "Contemporary": "Contemporáneo",
+    "Trendy": "Nuevas tendencias",
+    "Industrial": "Industrial",
+    "Vintage": "Vintage / Retro",
+    "Scandinavian": "Escandinavo / Nórdico",
+    "Decorative": "Decorativo / Artístico",
+    "HighTech": "High-Tech / Tecnológico",
+    "Rustic": "Rústico / Natural"
+  },
+  "applications": {
+    "Hotel": "Hotel",
+    "Retail": "Retail",
+    "Office": "Oficina",
+    "Residential": "Residencial",
+    "Exterior": "Exterior",
+    "Restaurant": "Restaurante",
+    "Museum": "Museo",
+    "Healthcare": "Hospital / Clínica",
+    "Education": "Educación / Biblioteca",
+    "BarLounge": "Bar / Lounge / Cafetería",
+    "PublicSpaces": "Espacios Públicos",
+    "Industrial": "Industrial / Almacén",
+    "Gallery": "Galería / Exposición",
+    "Landscape": "Paisajismo / Jardines"
+  },
+  
+  "footer_home": "Inicio",
+  "footer_designers": "Diseñadores",
+  "footer_explore": "Explorar",
+  "footer_contact": "Contacto",
+
+  "error_passwords_mismatch": "Las contraseñas no coinciden.",
+  "error_password_length": "La contraseña debe tener al menos 6 caracteres.",
+  "error_email_in_use": "Este email ya está en uso. Intenta iniciar sesión.",
+  "error_generic_signup": "Error al crear la cuenta. Inténtalo de nuevo.",
+  "error_invalid_credentials": "Email o contraseña incorrectos.",
+  "error_generic_save_profile": "Hubo un error al guardar tu perfil.",
+  "error_generic_save_design": "Hubo un error al guardar el diseño.",
+  "error_all_fields_required": "Por favor, completa todos los campos obligatorios.",
+  "error_image_required": "Por favor, sube una imagen."
 }
+  

@@ -1,6 +1,6 @@
-// src/pages/DesignFormPage.jsx - VERSIÓN FINAL Y COMPLETA CON VALIDACIÓN DE IMAGEN
+// src/pages/DesignFormPage.jsx - VERSIÓN FINAL, COMPLETA Y 100% TRADUCIDA
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { auth, db, storage } from '../firebase/config.js';
@@ -9,9 +9,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { onAuthStateChanged } from 'firebase/auth';
 import Modal from '../components/Modal';
 
-const CATEGORIES = ["Downlight", "Linear", "Spotlight", "Pendant", "Wall Washer", "Gobo", "Otro"];
-const APPLICATIONS = ["Hotel", "Retail", "Oficina", "Residencial", "Exterior", "Restaurante", "Museo"];
-const STYLES = ["Contemporáneo", "Minimalista", "Industrial", "Clásico", "Moderno", "Otro"];
+// Las constantes ahora se gestionan a través de los archivos de traducción.
 
 // --- Componente para el contenido de la guía de imágenes ---
 const ImageGuideContent = () => {
@@ -43,13 +41,12 @@ const ImageGuideContent = () => {
     );
 };
 
-
 function DesignFormPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { designId, lang } = useParams();
+
   const [isGuideOpen, setIsGuideOpen] = useState(false);
-  
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [imageFile, setImageFile] = useState(null);
@@ -62,6 +59,19 @@ function DesignFormPage() {
   const [isPublic, setIsPublic] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  const countriesList = useMemo(() => {
+    const countriesObject = t('countries', { returnObjects: true }) || {};
+    return Object.entries(countriesObject).sort(([, a], [, b]) => a.localeCompare(b));
+  }, [t]);
+
+  const categoriesObject = t('categories', { returnObjects: true }) || {};
+  const applicationsObject = t('applications', { returnObjects: true }) || {};
+  const stylesObject = t('styles', { returnObjects: true }) || {};
+
+  const categoriesList = Object.entries(categoriesObject);
+  const applicationsList = Object.entries(applicationsObject);
+  const stylesList = Object.entries(stylesObject);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -107,11 +117,7 @@ function DesignFormPage() {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (!file) {
-      setImageFile(null);
-      setImagePreview('');
-      return;
-    }
+    if (!file) return;
     setError('');
     const allowedTypes = ['image/jpeg', 'image/webp', 'image/png'];
     if (!allowedTypes.includes(file.type)) {
@@ -119,7 +125,7 @@ function DesignFormPage() {
       e.target.value = null;
       return;
     }
-    const maxSizeInBytes = 2 * 1024 * 1024; // 2 MB
+    const maxSizeInBytes = 2 * 1024 * 1024;
     if (file.size > maxSizeInBytes) {
       setError(`La imagen es muy pesada (${(file.size / 1024 / 1024).toFixed(1)} MB). El máximo es 2 MB.`);
       e.target.value = null;
@@ -151,11 +157,11 @@ function DesignFormPage() {
     const user = auth.currentUser;
     if (!user) return;
     if (!title || !description || !category || !style || !country) {
-      setError("Por favor, completa todos los campos obligatorios.");
+      setError(t('error_all_fields_required'));
       return;
     }
     if (!designId && !imageFile) {
-      setError("Por favor, sube una imagen.");
+      setError(t('error_image_required'));
       return;
     }
     setLoading(true);
@@ -192,7 +198,7 @@ function DesignFormPage() {
       }
       navigate(`/${lang}/mis-disenos`);
     } catch (err) {
-      setError("Hubo un error al guardar el diseño.");
+      setError(t('error_generic_save_design'));
       console.error(err);
     } finally {
       setLoading(false);
@@ -266,14 +272,14 @@ function DesignFormPage() {
                 <label htmlFor="category" className="block text-sm font-medium leading-6 text-gray-900">{t('design_form_category_label')}</label>
                 <select id="category" value={category} onChange={(e) => setCategory(e.target.value)} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                   <option value="" disabled>Selecciona...</option>
-                  {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                  {categoriesList.map(([key, value]) => <option key={key} value={key}>{value}</option>)}
                 </select>
               </div>
               <div>
                 <label htmlFor="style" className="block text-sm font-medium leading-6 text-gray-900">{t('design_form_style_label')}</label>
                 <select id="style" value={style} onChange={(e) => setStyle(e.target.value)} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                   <option value="" disabled>Selecciona...</option>
-                  {STYLES.map(s => <option key={s} value={s}>{s}</option>)}
+                  {stylesList.map(([key, value]) => <option key={key} value={key}>{value}</option>)}
                 </select>
               </div>
             </div>
@@ -281,10 +287,10 @@ function DesignFormPage() {
             <div>
               <label className="block text-sm font-medium leading-6 text-gray-900">{t('design_form_applications_label')}</label>
               <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {APPLICATIONS.map(app => (
-                  <div key={app} className="flex items-center">
-                    <input id={`app-${app}`} type="checkbox" value={app} checked={applications.includes(app)} onChange={handleApplicationChange} className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                    <label htmlFor={`app-${app}`} className="ml-2 block text-sm text-gray-900">{app}</label>
+                {applicationsList.map(([key, value]) => (
+                  <div key={key} className="flex items-center">
+                    <input id={`app-${key}`} type="checkbox" value={key} checked={applications.includes(key)} onChange={handleApplicationChange} className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                    <label htmlFor={`app-${key}`} className="ml-2 block text-sm text-gray-900">{value}</label>
                   </div>
                 ))}
               </div>
@@ -296,9 +302,18 @@ function DesignFormPage() {
                 <input type="text" id="tags" value={tags} onChange={(e) => setTags(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder={t('design_form_tags_placeholder')} />
               </div>
               <div>
-                <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">{t('design_form_country_label')}</label>
-                <input type="text" id="country" value={country} onChange={(e) => setCountry(e.target.value)} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Ej: España" />
-              </div>
+              <label htmlFor="country" className="block text-sm font-bold leading-6 text-gray-900">{t('design_form_country_label')}</label>
+              <select 
+                id="country" 
+                value={country} 
+                onChange={(e) => setCountry(e.target.value)} 
+                required 
+                className="mt-1 block w-full rounded-md border-gray-300 bg-white p-3 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              >
+                <option value="" disabled>{t('profile_form_country_select')}</option>
+                {countriesList.map(([key, value]) => <option key={key} value={key}>{value}</option>)}
+              </select>
+            </div>
             </div>
             
             <div className="border-t pt-6">

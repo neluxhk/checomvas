@@ -1,13 +1,14 @@
-// src/pages/LoginPage.jsx - VERSIÓN CORREGIDA Y MULTILINGÜE
+// src/pages/LoginPage.jsx - VERSIÓN FINAL Y COMPLETA CON RECUPERACIÓN DE CONTRASEÑA
 
-import React, { useState } from 'react'; // <-- ESTA LÍNEA ES LA CORRECCIÓN
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
   GoogleAuthProvider, 
   signInWithPopup,
-  getAdditionalUserInfo
+  getAdditionalUserInfo,
+  sendPasswordResetEmail
 } from "firebase/auth";
 import { auth } from '../firebase/config.js';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -17,7 +18,6 @@ function LoginPage() {
   const navigate = useNavigate();
   const { lang } = useParams();
 
-  // Ahora usamos useState directamente, sin 'React.'
   const [activeTab, setActiveTab] = useState('login');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -25,25 +25,27 @@ function LoginPage() {
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null); // Para mensajes de éxito (como el de recuperación)
 
-  // ... (El resto de las funciones handleSubmit, etc., no cambian y son correctas)
   const handleLogin = (e) => {
     e.preventDefault();
     setError(null);
+    setSuccess(null);
     signInWithEmailAndPassword(auth, loginEmail, loginPassword)
       .then(() => {
         navigate(`/${lang}/dashboard`);
       })
       .catch(() => {
-        setError("Email o contraseña incorrectos.");
+        setError(t('error_invalid_credentials'));
       });
   };
 
   const handleSignup = (e) => {
     e.preventDefault();
     setError(null);
+    setSuccess(null);
     if (signupPassword.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres.");
+      setError(t('error_password_length'));
       return;
     }
     createUserWithEmailAndPassword(auth, signupEmail, signupPassword)
@@ -52,9 +54,9 @@ function LoginPage() {
       })
       .catch((error) => {
         if (error.code === 'auth/email-already-in-use') {
-          setError("Este email ya está en uso.");
+          setError(t('error_email_in_use'));
         } else {
-          setError("Error al crear la cuenta.");
+          setError(t('error_generic_signup'));
         }
       });
   };
@@ -62,6 +64,7 @@ function LoginPage() {
   const handleGoogleSignIn = () => {
     const provider = new GoogleAuthProvider();
     setError(null);
+    setSuccess(null);
     signInWithPopup(auth, provider)
       .then((result) => {
         const additionalUserInfo = getAdditionalUserInfo(result);
@@ -76,9 +79,23 @@ function LoginPage() {
       });
   };
 
+  const handlePasswordReset = () => {
+    setError(null);
+    setSuccess(null);
+    const email = prompt(t('login_password_reset_prompt'));
+    if (email) {
+      sendPasswordResetEmail(auth, email)
+        .then(() => {
+          setSuccess(t('login_password_reset_success'));
+        })
+        .catch((error) => {
+          console.error("Error al enviar correo de recuperación:", error);
+          setError(t('login_password_reset_error'));
+        });
+    }
+  };
 
   return (
-    // ... EL CÓDIGO JSX DEL RETURN NO CAMBIA Y ES CORRECTO ...
     <div className="flex items-center justify-center min-h-screen p-4 bg-checomvas-background text-checomvas-foreground" style={{ fontFamily: "'Spline Sans', sans-serif" }}>
       <div className="w-full max-w-md mx-auto">
         <header className="text-center mb-8">
@@ -87,6 +104,7 @@ function LoginPage() {
         </header>
 
         <div className="bg-checomvas-secondary p-4 sm:p-6 rounded-2xl shadow-2xl shadow-black/30">
+          {success && <p className="text-sm text-green-500 text-center mb-4">{success}</p>}
           <div className="flex border-b border-gray-700 mb-6">
             <button onClick={() => setActiveTab('login')} className={`tab ${activeTab === 'login' ? 'active' : ''}`}>
               {t('login_tab_signin')}
@@ -107,7 +125,9 @@ function LoginPage() {
                   <input className="form-input pl-12" placeholder={t('login_password_placeholder')} type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required />
                 </div>
                 <div className="text-right">
-                  <a className="text-sm text-checomvas-primary hover:underline" href="#">{t('login_forgot_password')}</a>
+                  <button type="button" onClick={handlePasswordReset} className="text-sm text-checomvas-primary hover:underline">
+                    {t('login_forgot_password')}
+                  </button>
                 </div>
                 <button className="btn w-full bg-checomvas-primary text-checomvas-secondary font-bold py-3 px-4 rounded-full shadow-lg shadow-checomvas-primary/20" type="submit">
                   {t('login_signin_button')}

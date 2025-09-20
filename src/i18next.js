@@ -57,7 +57,7 @@ i18n
 
     // Opcional: activa los logs de i18next en la consola para depuración.
     // Ponlo en 'false' cuando lances a producción.
-    debug: true, 
+    debug: false, 
   });
 
 export default i18n;

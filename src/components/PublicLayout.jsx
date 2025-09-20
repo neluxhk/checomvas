@@ -8,10 +8,12 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import LanguageSwitcher from './LanguageSwitcher';
 
-const NavItem = ({ to, icon, label }) => (
+const NavItem = ({ to, icon, labelKey }) => { // 1. Cambiamos 'label' por 'labelKey'
+  const { t } = useTranslation(); // 2. Añadimos el hook de traducción
+  return (
     <NavLink 
       to={to} 
-      end={to.endsWith('/es') || to.endsWith('/en') || to.endsWith('/')}
+      end={to.endsWith('/es') || to.endsWith('/en') || to.endsWith('/zh')}
       className={({ isActive }) => 
         `flex flex-col items-center justify-center gap-1 transition-colors hover:text-public-primary/80 ${
           isActive ? 'text-public-primary' : 'text-text-secondary'
@@ -22,12 +24,13 @@ const NavItem = ({ to, icon, label }) => (
         <>
           <span className="material-symbols-outlined !font-light text-3xl">{icon}</span>
           <p className={`text-xs ${isActive ? 'font-semibold' : 'font-medium'}`}>
-            {label}
+            {t(labelKey)} {/* 3. Usamos t() para traducir la clave */}
           </p>
         </>
       )}
     </NavLink>
-);
+  );
+};
 
 function PublicLayout() {
   const { t } = useTranslation();
@@ -115,10 +118,10 @@ function PublicLayout() {
       </div>
       <footer className="sticky bottom-0 z-10 border-t border-gray-200 bg-public-secondary/90 backdrop-blur-sm">
         <nav className="flex items-center justify-around px-4 py-2">
-            <NavItem to={`/${lang}`} icon="home" label="Inicio" />
-            <NavItem to={`/${lang}/diseñadores`} icon="group" label="Diseñadores" />
-            <NavItem to={`/${lang}/explorar`} icon="explore" label="Explorar" />
-            <NavItem to={`/${lang}/contacto`} icon="email" label="Contacto" />
+            <NavItem to={`/${lang}`} icon="home" labelKey="footer_home" />
+            <NavItem to={`/${lang}/diseñadores`} icon="group" labelKey="footer_designers" />
+            <NavItem to={`/${lang}/explorar`} icon="explore" labelKey="footer_explore" />
+            <NavItem to={`/${lang}/contacto`} icon="email" labelKey="footer_contact" />
         </nav>
       </footer>
     </div>

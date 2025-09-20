@@ -1,22 +1,18 @@
-// src/pages/CompleteProfilePage.jsx - VERSIÓN FINAL, COMPLETA Y 100% TRADUCIDA
+// src/pages/CompleteProfilePage.jsx - VERSIÓN FINAL Y CORREGIDA
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { auth, db, storage } from '../firebase/config.js';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { onAuthStateChanged } from 'firebase/auth';
-import Modal from '../components/Modal';
-
-// Las listas de opciones ahora se gestionan a través de los archivos de traducción .json
 
 function CompleteProfilePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { lang } = useParams();
 
-  // --- Estados del Formulario ---
   const [fullName, setFullName] = useState('');
   const [company, setCompany] = useState('');
   const [professionalEmail, setProfessionalEmail] = useState('');
@@ -31,15 +27,20 @@ function CompleteProfilePage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  // --- Lógica para Cargar Datos y Opciones de Desplegables ---
-  const countriesObject = t('countries', { returnObjects: true }) || {};
-  const rolesObject = t('roles', { returnObjects: true }) || {};
+  const countriesList = useMemo(() => {
+    const countriesObject = t('countries', { returnObjects: true }) || {};
+    return Object.entries(countriesObject).sort(([, a], [, b]) => a.localeCompare(b));
+  }, [t]);
 
-  const countriesList = Object.entries(countriesObject).sort(([, a], [, b]) => a.localeCompare(b));
-  
-  const roleKeys = Object.keys(rolesObject);
-  const rolesProjectKeys = roleKeys.slice(0, 6);
-  const rolesBusinessKeys = roleKeys.slice(6);
+  const { rolesProjectKeys, rolesBusinessKeys, rolesObject } = useMemo(() => {
+    const rolesObj = t('roles', { returnObjects: true }) || {};
+    const roleKeys = Object.keys(rolesObj);
+    return {
+      rolesProjectKeys: roleKeys.slice(0, 6),
+      rolesBusinessKeys: roleKeys.slice(6),
+      rolesObject: rolesObj,
+    };
+  }, [t]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -68,6 +69,7 @@ function CompleteProfilePage() {
           }
         }
       } else {
+        // CORRECCIÓN 1: Usar comillas invertidas (`) en lugar de barras (/)
         navigate(`/${lang}/login`);
       }
     });
@@ -86,7 +88,6 @@ function CompleteProfilePage() {
     const file = e.target.files[0];
     if (!file) return;
     setError('');
-
     if (file.type !== 'application/pdf') {
       setError(t('profile_error_pdf_format'));
       e.target.value = null;
@@ -107,17 +108,17 @@ function CompleteProfilePage() {
     const user = auth.currentUser;
     if (!user) return;
     if (!fullName || !city || !country || !role) {
-      setError("Por favor, rellena todos los campos obligatorios.");
+      setError(t('error_all_fields_required'));
       return;
     }
     setLoading(true);
     setError('');
-
     try {
       let logoUrl = logoPreview;
       if (logoFile) {
         const logoRef = ref(storage, `logos/${user.uid}/${logoFile.name}`);
-        const snapshot = await uploadBytes(logoRef, logoRef);
+        // CORRECCIÓN 2: El segundo argumento debe ser el archivo, no la referencia
+        const snapshot = await uploadBytes(logoRef, logoFile);
         logoUrl = await getDownloadURL(snapshot.ref);
       }
       
@@ -142,10 +143,11 @@ function CompleteProfilePage() {
       
       await setDoc(doc(db, "users", user.uid), userProfileData, { merge: true });
       
+      // CORRECCIÓN 3: Usar comillas invertidas (`) en lugar de barras (/)
       navigate(`/${lang}/dashboard`);
       
     } catch (err) {
-      setError("Hubo un error al guardar tu perfil.");
+      setError(t('error_generic_save_profile'));
       console.error(err);
     } finally {
       setLoading(false);

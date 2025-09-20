@@ -76,9 +76,9 @@
     "Decorator": "Decorator",
     "Planner": "Planner",
     "Industrial Designer": "Industrial Designer",
-    "Manufacturer": "Manufacturer",
-    "Distributor": "Distributor/Importer",
-    "Builder": "Builder/Contractor"
+    "Manufacturer": "Designer-manufacturer",
+    "Distributor": "Designer-Distributor/Importer",
+    "Builder": "Designer-Builder/Contractor"
   },
   "design_form_add_title": "Add New Design",
 "design_form_edit_title": "Edit Design",
@@ -139,7 +139,7 @@
   "guide_tip_content": "If you want to show your identity as a designer, use your platform profile! There you can add your logo. Companies wishing to display their brand can opt for a premium plan.",
 
   "landing_hero_title": "CHECOMVAS",
-  "landing_hero_subtitle": "Connect with the world's top lighting designers and manufacturers. Discover innovative designs and bring your projects to life.",
+  "landing_hero_subtitle": "Connect with the world's top lighting designers. Discover innovative designs and bring your projects to life.",
   "landing_recent_title": "Recently Added",
   "landing_howitworks_title": "The Meeting Point for Lighting",
   "landing_howitworks_subtitle": "Checomvas simplifies the connection between creative talent and the industry.",
@@ -198,7 +198,70 @@
   "profile_form_pdf_select_button": "Select PDF",
   "profile_form_pdf_attached": "Attached file",
   "profile_error_pdf_format": "Invalid format. Only PDF files are allowed.",
-  "profile_error_pdf_size": "The PDF is too large. The maximum is 5 MB."
+  "profile_error_pdf_size": "The PDF is too large. The maximum is 5 MB.",
 
+  "login_password_reset_prompt": "Please enter your email address to reset your password:",
+  "login_password_reset_success": "Recovery email sent! Please check your inbox.",
+  "login_password_reset_error": "Could not send recovery email. Please check if the email is correct.",
+
+  "categories": {
+    "Downlight": "Recessed Lighting",
+    "Surface": "Surface Mounted",
+    "Pendant": "Pendant Lighting",
+    "Track": "Track Lighting",
+    "Linear": "Linear Lighting",
+    "Outdoor": "Outdoor Lighting",
+    "Decorative": "Decorative Lighting",
+    "Architectural": "Architectural Lighting",
+    "Industrial": "Industrial Lighting",
+    "Commercial": "Commercial Lighting",
+    "Emergency": "Emergency & Safety Lighting",
+    "Smart": "Smart Lighting"
+  },
+  "styles": {
+    "Modern": "Modern",
+    "Minimalist": "Minimalist",
+    "Classic": "Classic",
+    "Contemporary": "Contemporary",
+    "Trendy": "Trendy / New Trends",
+    "Industrial": "Industrial",
+    "Vintage": "Vintage / Retro",
+    "Scandinavian": "Scandinavian / Nordic",
+    "Decorative": "Decorative / Artistic",
+    "HighTech": "High-Tech / Technological",
+    "Rustic": "Rustic / Natural"
+  },
+  "applications": {
+    "Hotel": "Hotel",
+    "Retail": "Retail",
+    "Office": "Office",
+    "Residential": "Residential",
+    "Exterior": "Exterior",
+    "Restaurant": "Restaurant",
+    "Museum": "Museum",
+    "Healthcare": "Hospital / Clinic",
+    "Education": "Education / Library",
+    "BarLounge": "Bar / Lounge / Café",
+    "PublicSpaces": "Public Spaces",
+    "Industrial": "Industrial / Warehouse",
+    "Gallery": "Gallery / Exhibition",
+    "Landscape": "Landscape / Garden"
+  },
+  
+  "footer_home": "Home",
+  "footer_designers": "Designers",
+  "footer_explore": "Explore",
+  "footer_contact": "Contact",
+
+  "error_passwords_mismatch": "Passwords do not match.",
+  "error_password_length": "Password must be at least 6 characters.",
+  "error_email_in_use": "This email is already in use. Please try to sign in.",
+  "error_generic_signup": "Error creating account. Please try again.",
+  "error_invalid_credentials": "Incorrect email or password.",
+  "error_generic_save_profile": "There was an error saving your profile.",
+  "error_generic_save_design": "There was an error saving the design.",
+  "error_all_fields_required": "Please complete all required fields.",
+  "error_image_required": "Please upload an image."
 }
+
 

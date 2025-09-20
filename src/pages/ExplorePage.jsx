@@ -1,12 +1,10 @@
-// src/pages/ExplorePage.jsx - VERSIÓN FINAL, ESTABLE Y CON URLS DINÁMICAS
+// src/pages/ExplorePage.jsx - VERSIÓN FINAL Y COMPLETA CON FILTROS TRADUCIDOS
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebase/config.js';
 import { collection, query, orderBy, where, limit, startAfter, getDocs } from 'firebase/firestore';
 import { Link, useSearchParams, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-
-const CATEGORIES = ["Downlight", "Linear", "Spotlight", "Pendant", "Wall Washer", "Gobo", "Otro"];
 
 const PublicDesignCard = ({ design }) => {
   const { lang } = useParams();
@@ -31,104 +29,89 @@ const PAGE_SIZE = 8;
 function ExplorePage() {
     const { t } = useTranslation();
     const [searchParams, setSearchParams] = useSearchParams();
-
+    
     const [designs, setDesigns] = useState([]);
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
     const [lastDoc, setLastDoc] = useState(null);
     const [hasMore, setHasMore] = useState(true);
 
-    // El estado de los filtros se inicializa desde la URL
-    const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'All');
-    const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'createdAt');
+    const [filters, setFilters] = useState({
+        category: searchParams.get('category') || 'All',
+        sortBy: searchParams.get('sort') || 'createdAt',
+    });
 
-    const fetchFirstPage = async (category, sort) => {
-        setLoading(true);
-        setHasMore(true);
-        setDesigns([]);
+    const categoriesObject = t('categories', { returnObjects: true }) || {};
+    const categoriesList = Object.entries(categoriesObject);
+
+    const handleFilterChange = (key, value) => {
+        const newFilters = { ...filters, [key]: value };
+        setFilters(newFilters);
+        
+        const newSearchParams = new URLSearchParams();
+        if (newFilters.category !== 'All') newSearchParams.set('category', newFilters.category);
+        if (newFilters.sortBy !== 'createdAt') newSearchParams.set('sort', newFilters.sortBy);
+        
+        setSearchParams(newSearchParams, { replace: true });
+    };
+
+    const fetchDesigns = useCallback(async (loadMore = false) => {
+        if (!loadMore) {
+            setLoading(true);
+            setHasMore(true);
+        } else {
+            if (!hasMore || loadingMore || !lastDoc) return;
+            setLoadingMore(true);
+        }
+
         try {
             const queryConstraints = [
                 collection(db, "designs"),
                 where("public", "==", true),
-                orderBy(sort, "desc"),
-                limit(PAGE_SIZE)
+                orderBy(filters.sortBy, "desc"),
             ];
-            if (category !== 'All') {
-                queryConstraints.splice(2, 0, where("category", "==", category));
+            
+            if (filters.category !== 'All') {
+                queryConstraints.splice(2, 0, where("category", "==", filters.category));
             }
+
+            if (loadMore && lastDoc) {
+                queryConstraints.push(startAfter(lastDoc));
+            }
+            queryConstraints.push(limit(PAGE_SIZE));
+            
             const q = query(...queryConstraints);
             const documentSnapshots = await getDocs(q);
+
             const newDesigns = documentSnapshots.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setDesigns(newDesigns);
+            
+            if (loadMore) {
+                setDesigns(prev => [...prev, ...newDesigns]);
+            } else {
+                setDesigns(newDesigns);
+            }
+
             const lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
             setLastDoc(lastVisible);
+
             if (documentSnapshots.docs.length < PAGE_SIZE) {
                 setHasMore(false);
             }
+
         } catch (error) {
             console.error("Error fetching designs:", error);
         }
-        setLoading(false);
-    };
 
-    const fetchMoreDesigns = async () => {
-        if (!hasMore || loadingMore || !lastDoc) return;
-        setLoadingMore(true);
-        try {
-            const queryConstraints = [
-                collection(db, "designs"),
-                where("public", "==", true),
-                orderBy(sortBy, "desc"),
-                startAfter(lastDoc),
-                limit(PAGE_SIZE)
-            ];
-            if (selectedCategory !== 'All') {
-                queryConstraints.splice(2, 0, where("category", "==", selectedCategory));
-            }
-            const q = query(...queryConstraints);
-            const documentSnapshots = await getDocs(q);
-            const newDesigns = documentSnapshots.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setDesigns(prevDesigns => [...prevDesigns, ...newDesigns]);
-            const lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
-            setLastDoc(lastVisible);
-            if (documentSnapshots.docs.length < PAGE_SIZE) {
-                setHasMore(false);
-            }
-        } catch (error) {
-            console.error("Error fetching more designs:", error);
+        if (loadMore) {
+            setLoadingMore(false);
+        } else {
+            setLoading(false);
         }
-        setLoadingMore(false);
-    };
+    }, [filters, lastDoc, hasMore, loadingMore]);
 
-    // useEffect se dispara cuando los filtros cambian en el estado
     useEffect(() => {
-        fetchFirstPage(selectedCategory, sortBy);
-    }, [selectedCategory, sortBy]);
-
-    // Función para manejar el cambio en los desplegables
-    const handleCategoryChange = (e) => {
-        const newCategory = e.target.value;
-        setSelectedCategory(newCategory);
-        // Actualizamos la URL
-        if (newCategory === 'All') {
-            searchParams.delete('category');
-        } else {
-            searchParams.set('category', newCategory);
-        }
-        setSearchParams(searchParams, { replace: true });
-    };
-
-    const handleSortChange = (e) => {
-        const newSortBy = e.target.value;
-        setSortBy(newSortBy);
-        // Actualizamos la URL
-        if (newSortBy === 'createdAt') {
-            searchParams.delete('sort');
-        } else {
-            searchParams.set('sort', newSortBy);
-        }
-        setSearchParams(searchParams, { replace: true });
-    };
+        fetchDesigns(false);
+    }, [filters, fetchDesigns]);
 
     return (
         <main className="p-4">
@@ -139,12 +122,12 @@ function ExplorePage() {
                     <label htmlFor="category-filter" className="sr-only">{t('explore_filter_category')}</label>
                     <select 
                         id="category-filter"
-                        value={selectedCategory} 
-                        onChange={handleCategoryChange} 
+                        value={filters.category} 
+                        onChange={(e) => handleFilterChange('category', e.target.value)} 
                         className="w-full appearance-none rounded-lg border-gray-300 bg-white py-3 pl-4 pr-10 text-base text-text-primary shadow-sm focus:border-public-primary focus:outline-none focus:ring-1 focus:ring-public-primary"
                     >
                         <option value="All">{t('explore_filter_all_categories')}</option>
-                        {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                        {categoriesList.map(([key, value]) => <option key={key} value={key}>{value}</option>)}
                     </select>
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                         <span className="material-symbols-outlined text-text-secondary">expand_more</span>
@@ -154,8 +137,8 @@ function ExplorePage() {
                     <label htmlFor="sort-by" className="sr-only">{t('explore_sort_by')}</label>
                     <select 
                         id="sort-by"
-                        value={sortBy} 
-                        onChange={handleSortChange} 
+                        value={filters.sortBy} 
+                        onChange={(e) => handleFilterChange('sortBy', e.target.value)} 
                         className="w-full appearance-none rounded-lg border-gray-300 bg-white py-3 pl-4 pr-10 text-base text-text-primary shadow-sm focus:border-public-primary focus:outline-none focus:ring-1 focus:ring-public-primary"
                     >
                         <option value="createdAt">{t('explore_sort_recent')}</option>
@@ -183,7 +166,7 @@ function ExplorePage() {
             <div className="mt-10 text-center">
                 {hasMore && !loading && (
                     <button 
-                        onClick={fetchMoreDesigns} 
+                        onClick={() => fetchDesigns(true)} 
                         disabled={loadingMore} 
                         className="bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
