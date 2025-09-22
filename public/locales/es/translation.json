@@ -20,6 +20,8 @@
   "dashboard_total_requests": "{{count}} solicitud en total",
   "dashboard_total_requests_plural": "{{count}} solicitudes en total",
   "dashboard_view_all_messages": "Ver todos los mensajes",
+  "dashboard_no_designs_yet": "¡Es hora de mostrar tu talento! Sube tu primer diseño.",
+  "dashboard_add_first_design": "Añadir Primer Diseño",
 
   "login_page_title": "Iniciar Sesión / Registro", 
   "login_subtitle": "Iluminando el futuro del diseño.", 

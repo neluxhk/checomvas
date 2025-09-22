@@ -20,6 +20,9 @@
   "dashboard_total_requests": "总共 {{count}} 个请求",
   "dashboard_total_requests_plural": "总共 {{count}} 个请求",
   "dashboard_view_all_messages": "查看所有消息",
+  "dashboard_no_designs_yet": "是时候展示您的才华了！上传您的第一个设计。",
+  "dashboard_add_first_design": "添加第一个设计",
+
   "login_page_title": "登录 / 注册",
   "login_subtitle": "照亮设计的未来。",
   "login_tab_signin": "登录",

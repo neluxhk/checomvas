@@ -20,6 +20,8 @@
   "dashboard_total_requests": "{{count}} total request",
   "dashboard_total_requests_plural": "{{count}} total requests",
   "dashboard_view_all_messages": "View all messages",
+  "dashboard_no_designs_yet": "Time to show your talent! Upload your first design.",
+  "dashboard_add_first_design": "Add First Design",
 
   "login_page_title": "Sign In / Register",
   "login_subtitle": "Illuminating the future of design.",

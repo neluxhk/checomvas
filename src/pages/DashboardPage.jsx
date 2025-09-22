@@ -32,24 +32,39 @@ const ProfileCard = ({ profile }) => {
 };
 
 // --- WIDGET DE DISEÑOS ---
+// --- VERSIÓN FINAL Y SIMPLIFICADA DE DesignsSection ---
+// --- WIDGET DE DISEÑOS (VERSIÓN ACTUALIZADA) ---
+// --- WIDGET DE DISEÑOS (VERSIÓN FINAL Y ROBUSTA) ---
 const DesignsSection = ({ designs }) => {
   const { t } = useTranslation();
   const { lang } = useParams();
+
+  // Medida de seguridad: Si 'designs' no es un array, se trata como un array vacío
+  // para evitar errores si los datos aún no han cargado.
+  const safeDesigns = Array.isArray(designs) ? designs : [];
+
   return (
     <section>
         <div className="flex justify-between items-center px-2 pb-4">
             <h2 className="text-xl md:text-2xl font-bold text-gray-800">{t('dashboard_designs_title')}</h2>
-            <Link to={`/${lang}/mis-disenos`} className="text-sm font-medium text-blue-600 flex items-center gap-1 hover:underline">
-                {t('dashboard_view_all')} <span className="material-symbols-outlined text-lg">arrow_forward</span>
-            </Link>
+            {/* El enlace "View all" solo aparece si hay diseños */}
+            {safeDesigns.length > 0 && (
+                <Link to={`/${lang}/mis-disenos`} className="text-sm font-medium text-blue-600 flex items-center gap-1 hover:underline">
+                    {t('dashboard_view_all')} <span className="material-symbols-outlined text-lg">arrow_forward</span>
+                </Link>
+            )}
         </div>
         <div className="space-y-4">
-            {designs.length > 0 ? (
-              designs.slice(0, 2).map(design => <DesignListItem key={design.id} design={design} />)
+            {safeDesigns.length > 0 ? (
+                // Muestra hasta 3 diseños
+                safeDesigns.slice(0, 3).map(design => <DesignListItem key={design.id} design={design} />)
             ) : (
-              <p className="text-gray-500 text-sm px-2">Aún no tienes diseños.</p>
+                // Muestra un mensaje y un botón grande si no hay diseños
+                <div className="text-center p-6 border-2 border-dashed rounded-2xl">
+                    <p className="text-gray-500 text-sm mb-4">{t('dashboard_no_designs_yet')}</p>
+                    <AddDesignCard />
+                </div>
             )}
-            {designs.length < 3 && <AddDesignCard />}
         </div>
     </section>
   );
@@ -91,9 +106,9 @@ const AddDesignCard = () => {
   const { t } = useTranslation();
   const { lang } = useParams();
   return (
-    <Link to={`/${lang}/add-design`} className="flex items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 text-gray-500 h-28 flex-col gap-1 cursor-pointer hover:bg-gray-100 hover:border-blue-500 transition-colors">
-        <span className="material-symbols-outlined text-3xl">add_circle</span>
-        <p className="font-medium text-sm">{t('dashboard_add_new_design')}</p>
+    <Link to={`/${lang}/add-design`} className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-blue-700">
+        <span className="material-symbols-outlined">add_circle</span>
+        {t('dashboard_add_first_design')}
     </Link>
   );
 };
