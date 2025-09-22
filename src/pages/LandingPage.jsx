@@ -4,8 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { db } from '../firebase/config.js';
 import { collection, query, orderBy, limit, onSnapshot, where } from 'firebase/firestore';
-import heroImage from '../assets/hero.jpg';
+import heroImage from '../assets/quarrybay.jpg';
 import { Link, useParams } from 'react-router-dom'; // 1. Importamos useParams
+import { getOptimizedImageUrl } from '../utils/imageUtils.js';
 
 // --- Componente Hero (sin cambios) ---
 const Hero = () => {
@@ -26,7 +27,7 @@ const Hero = () => {
 // --- Componente "Recién Incorporado" ---
 const RecentDesigns = () => {
   const { t } = useTranslation();
-  const { lang } = useParams(); // 2. Obtenemos el idioma actual de la URL
+  const { lang } = useParams();
   const [recentDesigns, setRecentDesigns] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -59,18 +60,25 @@ const RecentDesigns = () => {
           <p className="text-center text-text-secondary">Cargando los últimos diseños...</p>
         ) : recentDesigns.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {recentDesigns.map(design => (
-              // ===================================================================
-              //           3. EL CAMBIO CLAVE: Usamos `lang` en la URL
-              // ===================================================================
-              <Link to={`/${lang}/diseno/${design.id}`} key={design.id} className="bg-white rounded-xl shadow-md overflow-hidden group transition-transform duration-300 hover:-translate-y-1">
-                <div className="w-full h-48 bg-cover bg-center" style={{ backgroundImage: `url(${design.imageUrl})` }}></div>
-                <div className="p-4">
-                  <p className="font-semibold truncate text-text-primary">{design.title}</p>
-                  <p className="text-sm text-text-secondary line-clamp-2">{design.description}</p>
-                </div>
-              </Link>
-            ))}
+            {recentDesigns.map(design => {
+              // Lógica de compatibilidad para la URL de la imagen
+              const imageUrl = design.imageFileName 
+                ? getOptimizedImageUrl(design.imageFileName, '200x200', design.userId) 
+                : design.imageUrl;
+
+              return (
+                <Link to={`/${lang}/diseno/${design.id}`} key={design.id} className="bg-white rounded-xl shadow-md overflow-hidden group transition-transform duration-300 hover:-translate-y-1">
+                  <div 
+                    className="w-full h-48 bg-gray-100 bg-cover bg-center" 
+                    style={{ backgroundImage: `url(${imageUrl || ''})` }}
+                  ></div>
+                  <div className="p-4">
+                    <p className="font-semibold truncate text-text-primary">{design.title}</p>
+                    <p className="text-sm text-text-secondary line-clamp-2 break-words">{design.description}</p>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         ) : (
           <p className="text-center text-text-secondary">Todavía no hay diseños públicos. ¡Sé el primero en subir uno!</p>
@@ -116,7 +124,7 @@ function LandingPage() {
   return (
     <>
       <title>Checomvas - Conectando a Diseñadores de Iluminación</title>
-      <meta name="description" content="La plataforma para conectar con los mejores diseñadores y fabricantes de iluminación." />
+      <meta name="description" content="La plataforma para conectar con los mejores diseñadores y fabricantes de productos iluminación." />
       
       <Hero />
       <RecentDesigns />

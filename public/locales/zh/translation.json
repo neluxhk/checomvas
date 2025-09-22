@@ -5,6 +5,8 @@
   "sidebar_upload_design": "上传设计",
   "sidebar_settings": "设置",
   "sidebar_logout": "登出",
+  "sidebar_plans": "升级套餐",
+
   "dashboard_welcome": "欢迎, {{name}}!",
   "dashboard_profile_title": "我的个人资料",
   "dashboard_edit_profile": "编辑个人资料",
@@ -81,6 +83,10 @@
   "design_form_save_button": "保存设计",
   "design_form_save_changes_button": "保存更改",
   "design_form_saving_button": "保存中...",
+  "design_form_datasheet_label": "规格书 (PDF)",
+  "design_form_datasheet_subtitle": "上传您的产品规格书，以便制造商查看详细规格。",
+  "design_form_datasheet_button": "选择PDF文件",
+
   "guide_button_text": "查看指南",
   "guide_title": "图片上传指南",
   "guide_objective": "我们的目标是让设计图库对访客和客户来说看起来专业、快速且有吸引力。",
@@ -130,6 +136,7 @@
   "design_detail_form_redirecting": "您将在3秒后被重定向...",
   "design_detail_loading": "正在加载设计...",
   "design_detail_not_found": "未找到所请求的设计。",
+  "design_detail_description_title": "设计说明",
 
   "countries": {
     "Spain": "西班牙",
@@ -152,7 +159,7 @@
   },
   
   "landing_hero_title": "CHECOMVAS",
-  "landing_hero_subtitle": "与全球顶尖的照明设计师和制造商联系。发现创新设计，让您的项目焕发生机。",
+  "landing_hero_subtitle": "与全球顶尖的照明产品设计师携手合作，探索创新设计，让您的项目焕发非凡光彩。",
   "landing_recent_title": "最新添加",
   "landing_howitworks_title": "照明的交汇点",
   "landing_howitworks_subtitle": "Checomvas 简化了创意人才与行业之间的联系。",
@@ -233,5 +240,10 @@
   "error_generic_save_profile": "保存您的个人资料时发生错误。",
   "error_generic_save_design": "保存设计时发生错误。",
   "error_all_fields_required": "请填写所有必填字段。",
-  "error_image_required": "请上传图片。"
+  "error_image_required": "请上传图片。",
+ 
+  "profile_portfolio_promo_text": "想要脱颖而出吗？用您最好的设计创建一个专业的作品集。",
+  "profile_cta_portfolio": "创建作品集",
+  "premium_feature_soon_alert": "高级功能即将推出！您将能够创建一个出色的作品集来展示您最好的项目。"
+
 }

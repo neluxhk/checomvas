@@ -5,6 +5,8 @@
   "sidebar_upload_design": "Subir Diseño",
   "sidebar_settings": "Configuración",
   "sidebar_logout": "Cerrar Sesión",
+  "sidebar_plans": "Planes",
+
   "dashboard_welcome": "¡Bienvenido, {{name}}!",
   "dashboard_profile_title": "Mi Perfil",
   "dashboard_edit_profile": "Editar Perfil",
@@ -97,6 +99,9 @@
   "design_form_save_button": "Guardar Diseño",
   "design_form_save_changes_button": "Guardar Cambios",
   "design_form_saving_button": "Guardando...",
+  "design_form_datasheet_label": "Ficha Técnica (PDF)",
+  "design_form_datasheet_subtitle": "Sube la ficha técnica de tu producto para que los fabricantes puedan ver las especificaciones.",
+  "design_form_datasheet_button": "Seleccionar PDF",
 
   "my_designs_title": "Mis Diseños",
   "my_designs_subtitle": "Gestiona tus 3 diseños principales. Estos serán los que se muestren en tu perfil público.",
@@ -136,7 +141,7 @@
   "guide_tip_content": "Si quieres mostrar tu identidad como diseñador, ¡utiliza tu perfil! Ahí podrás añadir tu logo. Las empresas que deseen mostrar su marca pueden optar por un plan premium.",
 
   "landing_hero_title": "CHECOMVAS",
-  "landing_hero_subtitle": "Conecta con los mejores diseñadores de iluminación del mundo. Descubre sus diseños más innovadores y da vida a tus proyectos.",
+  "landing_hero_subtitle": "Conecta con los mejores diseñadores de productos de iluminación del mundo. Descubre sus diseños más innovadores y da vida a tus proyectos.",
   "landing_recent_title": "Recién Incorporado",
   "landing_howitworks_title": "El Punto de Encuentro para la Iluminación",
   "landing_howitworks_subtitle": "Checomvas simplifica la conexión entre el talento creativo y la industria.",
@@ -158,6 +163,7 @@
   "design_detail_form_redirecting": "Serás redirigido en 3 segundos...",
   "design_detail_loading": "Cargando diseño...",
   "design_detail_not_found": "No se encontró el diseño solicitado.",
+  "design_detail_description_title": "Descripción del Diseño",
 
   "plans_page_title": "Planes a tu Medida",
   "plans_page_subtitle": "Elige el plan que mejor se adapte a tus necesidades para crecer en la red Checomvas.",
@@ -258,6 +264,11 @@
   "error_generic_save_profile": "Hubo un error al guardar tu perfil.",
   "error_generic_save_design": "Hubo un error al guardar el diseño.",
   "error_all_fields_required": "Por favor, completa todos los campos obligatorios.",
-  "error_image_required": "Por favor, sube una imagen."
+  "error_image_required": "Por favor, sube una imagen.",
+
+  "profile_portfolio_promo_text": "¿Quieres destacar aún más? Crea un portfolio de presentación profesional con tus mejores diseños.",
+  "profile_cta_portfolio": "Crear Portfolio de Presentación",
+  "premium_feature_soon_alert": "¡Función Premium Próximamente! Podrás crear un increíble portfolio de presentación para destacar tus mejores proyectos."
+
 }
   

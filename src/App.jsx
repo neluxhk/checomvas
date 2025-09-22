@@ -89,6 +89,7 @@ function App() {
             <Route path="perfil/:userId" element={<PublicProfilePage />} />
 
             {/* Futuras rutas públicas irían aquí, por ejemplo: */}
+            <Route path="/:lang/planes" element={<PlansPage />} />
             {/* <Route path="diseñadores" element={<DesignersPage />} /> */}
           </Route>
           

@@ -61,10 +61,12 @@ function Sidebar({ isSidebarOpen, setSidebarOpen }) {
         </div>
         
         <nav className="flex-1 space-y-2 p-4 font-medium">
+          {/* Navegación Principal */}
           <NavItem to={`/${lang}/dashboard`} icon="dashboard">{t('sidebar_dashboard')}</NavItem>
           <NavItem to={`/${lang}/mis-disenos`} icon="design_services">{t('sidebar_my_designs')}</NavItem>
           <NavItem to={`/${lang}/explorar`} icon="search">{t('sidebar_explore')}</NavItem>
           
+          {/* Botón de Acción Principal */}
           <div className="px-3 pt-4">
             <NavLink to={`/${lang}/add-design`} className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-blue-700">
               <span className="material-symbols-outlined">add_circle</span>
@@ -72,8 +74,13 @@ function Sidebar({ isSidebarOpen, setSidebarOpen }) {
             </NavLink>
           </div>
           
-          <hr className="my-4"/>
-          <NavItem to={`/${lang}/configuracion`} icon="settings">{t('sidebar_settings')}</NavItem> 
+          {/* Separador y Acciones Secundarias */}
+          <div className="pt-4 mt-4 border-t">
+            {/* --- ENLACE A PLANES AÑADIDO AQUÍ --- */}
+            <NavItem to={`/${lang}/planes`} icon="workspace_premium">{t('sidebar_plans')}</NavItem>
+            
+            <NavItem to={`/${lang}/configuracion`} icon="settings">{t('sidebar_settings')}</NavItem> 
+          </div>
         </nav>
 
         {/* =================================================================== */}

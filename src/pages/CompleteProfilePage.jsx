@@ -153,6 +153,11 @@ function CompleteProfilePage() {
       setLoading(false);
     }
   };
+  // ... después del final de tu función handleSubmit ...
+  const handlePremiumFeatureClick = (e) => {
+    e.preventDefault();
+    alert(t('premium_feature_soon_alert'));
+  };
 
   return (
     <div className="relative flex size-full min-h-screen flex-col justify-between overflow-x-hidden bg-gray-50" style={{ fontFamily: "'Manrope', sans-serif" }}>
@@ -228,25 +233,28 @@ function CompleteProfilePage() {
               </select>
             </div>
             
+                        {/* --- INICIO DEL BLOQUE DE PORTFOLIO "PRO" ACTUALIZADO --- */}
             <div className="border-t pt-6">
-              <label className="text-sm font-medium text-slate-700">{t('profile_form_pdf_label')}</label>
-              <p className="text-xs text-gray-500 mt-1 mb-2">{t('profile_form_pdf_subtitle')}</p>
-              <div className="flex items-center gap-4">
-                <input 
-                  type="file" 
-                  id="portfolio-upload" 
-                  onChange={handlePortfolioChange} 
-                  accept="application/pdf" 
-                  className="hidden" 
-                />
-                <label 
-                  htmlFor="portfolio-upload" 
+              <div className="relative rounded-lg p-4 bg-yellow-50 border border-yellow-300">
+                {/* Tag "PRO" en la esquina */}
+                <span className="absolute -top-2 -right-2 bg-yellow-900 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-md">
+                  PRO
+                </span>
+
+                <label className="text-sm font-medium text-yellow-900">{t('profile_form_pdf_label')}</label>
+                <p className="text-xs text-yellow-700 mt-1 mb-3">{t('profile_form_pdf_subtitle')}</p>
+                
+                {/* Botón que ahora activa la alerta */}
+                <button 
+                  onClick={handlePremiumFeatureClick}
                   className="cursor-pointer rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                 >
                   {t('profile_form_pdf_select_button')}
-                </label>
+                </button>
+                
+                {/* Mantenemos la lógica para mostrar el nombre del archivo si ya existe */}
                 {portfolioName && (
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="mt-3 flex items-center gap-2 text-sm text-gray-600">
                     <span className="material-symbols-outlined text-green-600">check_circle</span>
                     <span className="truncate max-w-[150px] sm:max-w-xs" title={portfolioName}>
                       {portfolioName}
@@ -255,6 +263,7 @@ function CompleteProfilePage() {
                 )}
               </div>
             </div>
+            {/* --- FIN DEL BLOQUE ACTUALIZADO --- */}
 
             {error && <p className="text-sm text-red-600 text-center">{error}</p>}
             
@@ -264,6 +273,24 @@ function CompleteProfilePage() {
               </button>
             </div>
           </form>
+          <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 sm:p-8 rounded-lg shadow-sm">
+            {/* ... TODO TU FORMULARIO ... */}
+          </form>
+
+          {/* --- INICIO DEL BLOQUE AÑADIDO --- */}
+          <div className="mt-8 text-center">
+            <p className="text-sm text-gray-500 mb-4">{t('profile_portfolio_promo_text')}</p>
+            <button 
+              onClick={handlePremiumFeatureClick} 
+              className="w-full flex items-center justify-center gap-2 rounded-lg h-12 px-4 bg-yellow-400 text-yellow-900 font-bold relative overflow-hidden group shadow-md transition-transform hover:scale-105 active:scale-100"
+            >
+              <span className="absolute top-0 right-0 bg-yellow-900 text-white text-xs font-bold px-2 py-0.5 rounded-bl-lg">
+                PRO
+              </span>
+              <span className="material-symbols-outlined">workspace_premium</span>
+              <span>{t('profile_cta_portfolio')}</span>
+            </button>
+          </div>
         </main>
       </div>
     </div>

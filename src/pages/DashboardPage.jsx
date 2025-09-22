@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next'; // Importamos el hook de traducc
 import { auth, db } from '../firebase/config.js';
 import { doc, getDoc, collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
+import { getOptimizedImageUrl } from '../utils/imageUtils.js';
+
 
 // --- WIDGET DE PERFIL ---
 const ProfileCard = ({ profile }) => {
@@ -53,16 +55,29 @@ const DesignsSection = ({ designs }) => {
   );
 };
 
+// --- COMPONENTE CORREGIDO Y FINAL ---
 const DesignListItem = ({ design }) => {
   const { t } = useTranslation();
   const { lang } = useParams();
+
+  // PASO 1: Importa la función de optimización al principio del archivo.
+  // import { getOptimizedImageUrl } from '../utils/imageUtils.js';
+  
+  // PASO 2: Lógica de compatibilidad para mostrar la imagen correcta.
+  const imageUrl = design.imageFileName 
+    ? getOptimizedImageUrl(design.imageFileName, '200x200', design.userId) 
+    : design.imageUrl;
+
   return (
     <div className="flex items-stretch gap-4 rounded-2xl bg-white p-4 shadow-md shadow-gray-200/50">
-        <div className="w-24 h-24 bg-cover bg-center rounded-lg flex-shrink-0" style={{ backgroundImage: `url(${design.imageUrl})` }}></div>
+        {/* PASO 3: Se usa la nueva 'imageUrl' y se añade un color de fondo por si la imagen tarda en cargar */}
+        <div className="w-24 h-24 bg-gray-100 bg-cover bg-center rounded-lg flex-shrink-0" style={{ backgroundImage: `url(${imageUrl || ''})` }}></div>
+        
         <div className="flex flex-col justify-between flex-1 min-w-0">
             <div>
                 <p className="text-gray-800 font-bold truncate">{design.title}</p>
-                <p className="text-gray-500 text-sm mt-1 line-clamp-2">{design.description}</p>
+                {/* PASO 4: Se añade 'break-words' para que el texto nunca se desborde */}
+                <p className="text-gray-500 text-sm mt-1 line-clamp-2 break-words">{design.description}</p>
             </div>
             <Link to={`/${lang}/edit-design/${design.id}`} className="text-blue-600 font-medium text-sm self-end flex items-center gap-1 hover:underline">
                 {t('dashboard_manage')} <span className="material-symbols-outlined text-lg">chevron_right</span>

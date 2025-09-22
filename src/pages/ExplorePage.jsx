@@ -5,15 +5,38 @@ import { db } from '../firebase/config.js';
 import { collection, query, orderBy, where, limit, startAfter, getDocs } from 'firebase/firestore';
 import { Link, useSearchParams, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { getOptimizedImageUrl } from '../utils/imageUtils.js';
 
 const PublicDesignCard = ({ design }) => {
   const { lang } = useParams();
+  console.log("[ExplorePage] Datos recibidos en PublicDesignCard:", design);
+  
+  // Lógica de compatibilidad para imágenes nuevas y antiguas.
+  const imageUrl = design.imageFileName 
+  ? getOptimizedImageUrl(design.imageFileName, '200x200', design.userId) 
+  : design.imageUrl;
+
+  // --- INICIO DE BLOQUE DE DEPURACIÓN ---
+  // Este bloque nos ayudará a encontrar por qué la imagen no se muestra.
+  // Puedes eliminarlo una vez que todo funcione.
+  if (design.imageFileName) {
+    console.log(
+      `[ExplorePage] Depurando diseño: "${design.title}"`,
+      {
+        nombreArchivoFirestore: design.imageFileName,
+        urlGeneradaParaMostrar: imageUrl
+      }
+    );
+  }
+  // --- FIN DE BLOQUE DE DEPURACIÓN ---
+
   return (
     <Link className="group block" to={`/${lang}/diseno/${design.id}`}>
         <div className="overflow-hidden rounded-lg shadow-md transition-shadow duration-300 group-hover:shadow-xl">
             <div 
                 className="w-full bg-cover bg-center aspect-square transition-transform duration-300 group-hover:scale-105" 
-                style={{ backgroundImage: `url(${design.imageUrl})` }} 
+                // Aseguramos que si la URL es nula o indefinida, no se rompa el estilo.
+                style={{ backgroundImage: `url(${imageUrl || ''})` }} 
             />
         </div>
         <div className="pt-3">
@@ -56,63 +79,73 @@ function ExplorePage() {
     };
 
     const fetchDesigns = useCallback(async (loadMore = false) => {
-        if (!loadMore) {
-            setLoading(true);
-            setHasMore(true);
-        } else {
-            if (!hasMore || loadingMore || !lastDoc) return;
-            setLoadingMore(true);
+    if (!loadMore) {
+        setLoading(true);
+        setHasMore(true);
+    } else {
+        if (!hasMore || loadingMore || !lastDoc) return;
+        setLoadingMore(true);
+    }
+
+    try {
+        const queryConstraints = [
+            collection(db, "designs"),
+            where("public", "==", true),
+            orderBy(filters.sortBy, "desc"),
+        ];
+        
+        if (filters.category !== 'All') {
+            queryConstraints.splice(2, 0, where("category", "==", filters.category));
         }
 
-        try {
-            const queryConstraints = [
-                collection(db, "designs"),
-                where("public", "==", true),
-                orderBy(filters.sortBy, "desc"),
-            ];
-            
-            if (filters.category !== 'All') {
-                queryConstraints.splice(2, 0, where("category", "==", filters.category));
-            }
-
-            if (loadMore && lastDoc) {
-                queryConstraints.push(startAfter(lastDoc));
-            }
-            queryConstraints.push(limit(PAGE_SIZE));
-            
-            const q = query(...queryConstraints);
-            const documentSnapshots = await getDocs(q);
-
-            const newDesigns = documentSnapshots.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            
-            if (loadMore) {
-                setDesigns(prev => [...prev, ...newDesigns]);
-            } else {
-                setDesigns(newDesigns);
-            }
-
-            const lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
-            setLastDoc(lastVisible);
-
-            if (documentSnapshots.docs.length < PAGE_SIZE) {
-                setHasMore(false);
-            }
-
-        } catch (error) {
-            console.error("Error fetching designs:", error);
+        if (loadMore && lastDoc) {
+            queryConstraints.push(startAfter(lastDoc));
         }
+        queryConstraints.push(limit(PAGE_SIZE));
+        
+        const q = query(...queryConstraints);
+        const documentSnapshots = await getDocs(q);
 
+        // --- INICIO DE BLOQUE DE DEPURACIÓN EN FETCH ---
+        // Este bloque nos mostrará los datos tal y como los devuelve Firestore,
+        // antes de que React los procese.
+        console.log("--- [ExplorePage] Datos CRUDOS recibidos de Firestore ---");
+        documentSnapshots.docs.forEach(doc => {
+          console.log(`Documento ID: ${doc.id}`, doc.data());
+        });
+        console.log("----------------------------------------------------");
+        // --- FIN DE BLOQUE DE DEPURACIÓN ---
+
+        const newDesigns = documentSnapshots.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
         if (loadMore) {
-            setLoadingMore(false);
+            setDesigns(prev => [...prev, ...newDesigns]);
         } else {
-            setLoading(false);
+            setDesigns(newDesigns);
         }
-    }, [filters, lastDoc, hasMore, loadingMore]);
 
-    useEffect(() => {
-        fetchDesigns(false);
-    }, [filters, fetchDesigns]);
+        const lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
+        setLastDoc(lastVisible);
 
+        if (documentSnapshots.docs.length < PAGE_SIZE) {
+            setHasMore(false);
+        }
+
+    } catch (error) {
+        console.error("Error fetching designs:", error);
+    }
+
+    if (loadMore) {
+        setLoadingMore(false);
+    } else {
+        setLoading(false);
+    }
+}, [filters, lastDoc, hasMore, loadingMore]);
+
+    // VERSIÓN CORREGIDA PARA ROMPER EL BUCLE
+useEffect(() => {
+    fetchDesigns(false);
+}, [filters]); // <-- SOLO DEBE DEPENDER DE 'filters'
     return (
         <main className="p-4">
             <h2 className="text-text-primary text-3xl font-bold tracking-tight mb-4">{t('explore_page_title')}</h2>

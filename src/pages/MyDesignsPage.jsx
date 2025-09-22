@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next'; // 1. Importar
+import { getOptimizedImageUrl } from '../utils/imageUtils.js';
 import { auth, db, storage } from '../firebase/config.js';
 import { collection, query, where, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
 import { ref, deleteObject } from 'firebase/storage';
@@ -12,10 +13,31 @@ import { onAuthStateChanged } from 'firebase/auth';
 const DesignCard = ({ design, handleDelete }) => {
   const { t } = useTranslation();
   const { lang } = useParams();
+
+  // Lógica de compatibilidad para imágenes nuevas y antiguas.
+  const imageUrl = design.imageFileName 
+  ? getOptimizedImageUrl(design.imageFileName, '200x200', design.userId) 
+  : design.imageUrl;
+
+  // --- INICIO DE BLOQUE DE DEPURACIÓN ---
+  // Este bloque nos ayudará a encontrar por qué la imagen no se muestra.
+  // Puedes eliminarlo una vez que todo funcione.
+  if (design.imageFileName) {
+    console.log(
+      `[MyDesignsPage] Depurando diseño: "${design.title}"`,
+      {
+        nombreArchivoFirestore: design.imageFileName,
+        urlGeneradaParaMostrar: imageUrl
+      }
+    );
+  }
+  // --- FIN DE BLOQUE DE DEPURACIÓN ---
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden group">
       <div className="aspect-w-16 aspect-h-9 bg-gray-200">
-        <img src={design.imageUrl} alt={design.title} className="w-full h-full object-cover" />
+        {/* Aseguramos que si la URL es nula o indefinida, el 'src' sea una cadena vacía para evitar errores. */}
+        <img src={imageUrl || ''} alt={design.title} className="w-full h-full object-cover" />
       </div>
       <div className="p-4">
         <h3 className="font-bold text-lg text-gray-800 truncate">{design.title}</h3>
@@ -23,7 +45,7 @@ const DesignCard = ({ design, handleDelete }) => {
       </div>
       <div className="p-4 bg-gray-50 flex justify-end gap-2">
           <Link to={`/${lang}/edit-design/${design.id}`} className="text-xs font-semibold text-blue-600 hover:text-blue-800">{t('my_designs_edit')}</Link>
-          <button onClick={() => handleDelete(design.id, design.imageUrl)} className="text-xs font-semibold text-red-600 hover:text-red-800">{t('my_designs_delete')}</button>
+          <button onClick={() => handleDelete(design.id)} className="text-xs font-semibold text-red-600 hover:text-red-800">{t('my_designs_delete')}</button>
       </div>
     </div>
   );
@@ -65,52 +87,94 @@ function MyDesignsPage() {
   }, [navigate, lang]);
 
   // Efecto para obtener los diseños del usuario en tiempo real desde Firestore
-  useEffect(() => {
-    if (!user) return; // Si no hay usuario, no hacemos nada
+  // REEMPLAZA TU useEffect de onAuthStateChanged CON ESTE
+useEffect(() => {
+    // Esta función se ejecutará cada vez que cambie el estado de autenticación
+    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
+        if (currentUser) {
+            // Usuario está logueado, lo guardamos en el estado
+            setUser(currentUser);
+            
+            // ¡NUEVA LÓGICA! AHORA QUE SABEMOS QUE HAY USUARIO, CREAMOS LA CONSULTA AQUÍ.
+            const q = query(collection(db, "designs"), where("userId", "==", currentUser.uid));
 
-    const q = query(collection(db, "designs"), where("userId", "==", user.uid));
+            // Creamos el listener para los diseños
+            const unsubscribeDesigns = onSnapshot(q, (querySnapshot) => {
+                const userDesigns = [];
+                querySnapshot.forEach((doc) => {
+                    userDesigns.push({ id: doc.id, ...doc.data() });
+                });
+                setDesigns(userDesigns);
+                setLoading(false);
+            }, (err) => {
+                console.error("Error obteniendo diseños:", err);
+                setError("No se pudieron cargar tus diseños.");
+                setLoading(false);
+            });
+            
+            // Devolvemos una función de limpieza para el listener de diseños
+            return () => unsubscribeDesigns();
 
-    // onSnapshot establece un "oyente" que actualiza la lista de diseños automáticamente
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const userDesigns = [];
-      querySnapshot.forEach((doc) => {
-        userDesigns.push({ id: doc.id, ...doc.data() });
-      });
-      setDesigns(userDesigns);
-      setLoading(false);
-    }, (err) => {
-      console.error("Error obteniendo diseños:", err);
-      setError("No se pudieron cargar tus diseños. Revisa tus permisos de Firestore."); // Futuro: traducir
-      setLoading(false);
+        } else {
+            // Usuario no está logueado
+            setUser(null);
+            setDesigns([]); // Limpiamos los diseños
+            setLoading(false);
+            navigate(`/${lang}/login`);
+        }
     });
 
-    return () => unsubscribe(); // Limpiamos el "oyente" al salir de la página
-  }, [user]);
+    // Devolvemos la función de limpieza para el listener de autenticación
+    return () => unsubscribeAuth();
+}, [navigate, lang]); // Las dependencias ahora son solo navigate y lang
 
   // Nueva función para borrar un diseño
-  const handleDelete = async (designId, imageUrl) => {
-    // 1. Pedimos confirmación para evitar borrados accidentales
+  // VERSIÓN FINAL Y ROBUSTA DE LA FUNCIÓN DE BORRADO
+// VERSIÓN FINAL Y CORREGIDA DE handleDelete
+const handleDelete = async (designId) => {
     if (!window.confirm(t('my_designs_delete_confirm'))) {
       return;
     }
 
     try {
-      setError(''); // Limpiamos cualquier error anterior
+      setError('');
+      
+      const designToDelete = designs.find(d => d.id === designId);
+      if (!designToDelete) throw new Error("Diseño no encontrado");
 
-      // 2. Borramos la imagen de Firebase Storage
-      if (imageUrl) {
-        const imageRef = ref(storage, imageUrl);
+      // Borramos las imágenes de Firebase Storage
+      if (designToDelete.imageFileName) {
+        // LÓGICA NUEVA Y CORREGIDA
+        const originalFileName = designToDelete.imageFileName;
+        const baseName = originalFileName.substring(0, originalFileName.lastIndexOf('.'));
+        const userId = designToDelete.userId; // Necesitamos el UID del usuario
+
+        // CORRECCIÓN: Construimos la ruta completa, incluyendo el UID del usuario.
+        const originalRef = ref(storage, `designs/${userId}/${originalFileName}`);
+        const thumbRef = ref(storage, `designs/${userId}/${baseName}_200x200.webp`);
+        const largeRef = ref(storage, `designs/${userId}/${baseName}_1000x1000.webp`);
+
+        await Promise.all([
+          deleteObject(originalRef).catch(e => {}),
+          deleteObject(thumbRef).catch(e => {}),
+          deleteObject(largeRef).catch(e => {})
+        ]);
+        console.log("Archivos de imagen borrados de Storage.");
+
+      } else if (designToDelete.imageUrl) {
+        // LÓGICA ANTIGUA (sin cambios, ya era correcta)
+        const imageRef = ref(storage, designToDelete.imageUrl);
         await deleteObject(imageRef);
-        console.log("Imagen borrada de Storage.");
+        console.log("Imagen (antigua) borrada de Storage.");
       }
 
-      // 3. Borramos el documento de datos de Firestore
+      // Borramos el documento de Firestore
       await deleteDoc(doc(db, "designs", designId));
       console.log("Documento borrado de Firestore.");
 
     } catch (err) {
       console.error("Error al borrar el diseño:", err);
-      setError("No se pudo borrar el diseño. Inténtalo de nuevo más tarde."); // Futuro: traducir
+      setError("No se pudo borrar el diseño. Inténtalo de nuevo más tarde.");
     }
   };
 

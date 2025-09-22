@@ -5,6 +5,8 @@
   "sidebar_upload_design": "Upload Design",
   "sidebar_settings": "Settings",
   "sidebar_logout": "Log Out",
+  "sidebar_plans": "Plans",
+
   "dashboard_welcome": "Welcome, {{name}}!",
   "dashboard_profile_title": "My Profile",
   "dashboard_edit_profile": "Edit Profile",
@@ -100,6 +102,9 @@
 "design_form_save_button": "Save Design",
 "design_form_save_changes_button": "Save Changes",
 "design_form_saving_button": "Saving...",
+"design_form_datasheet_label": "Datasheet (PDF)",
+"design_form_datasheet_subtitle": "Upload your product's datasheet for manufacturers to see the specifications.",
+"design_form_datasheet_button": "Select PDF",
 
   "my_designs_title": "My Designs",
   "my_designs_subtitle": "Manage your 3 main designs. These will be shown on your public profile.",
@@ -139,7 +144,7 @@
   "guide_tip_content": "If you want to show your identity as a designer, use your platform profile! There you can add your logo. Companies wishing to display their brand can opt for a premium plan.",
 
   "landing_hero_title": "CHECOMVAS",
-  "landing_hero_subtitle": "Connect with the world's top lighting designers. Discover innovative designs and bring your projects to life.",
+  "landing_hero_subtitle": "Connect with the world's top Lighting Product Designers. Discover innovative designs and bring your projects to life.",
   "landing_recent_title": "Recently Added",
   "landing_howitworks_title": "The Meeting Point for Lighting",
   "landing_howitworks_subtitle": "Checomvas simplifies the connection between creative talent and the industry.",
@@ -161,6 +166,7 @@
   "design_detail_form_redirecting": "You will be redirected in 3 seconds...",
   "design_detail_loading": "Loading design...",
   "design_detail_not_found": "The requested design was not found.",
+  "design_detail_description_title": "Design Description",
 
   "plans_page_title": "Plans Tailored for You",
   "plans_page_subtitle": "Choose the plan that best suits your needs to grow on the Checomvas network.",
@@ -261,7 +267,11 @@
   "error_generic_save_profile": "There was an error saving your profile.",
   "error_generic_save_design": "There was an error saving the design.",
   "error_all_fields_required": "Please complete all required fields.",
-  "error_image_required": "Please upload an image."
+  "error_image_required": "Please upload an image.",
+
+  "profile_portfolio_promo_text": "Want to stand out even more? Create a professional presentation portfolio with your best designs.",
+  "profile_cta_portfolio": "Create Presentation Portfolio",
+  "premium_feature_soon_alert": "Premium Feature Coming Soon! You'll be able to create an amazing presentation portfolio to showcase your best projects."
 }
 
 
